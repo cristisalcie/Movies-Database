@@ -699,10 +699,23 @@ void printGraph(TGraphL *graph) {
 }
 
 int intersect(TGraphL *g1, TGraphL *g2) {
-    for (int i = 0; i < g1->actorSize; i++) {
-        for (int j = 0; j < g2->actorSize; j++) {
-            if (!strcmp(g1->actorList[i].name, g2->actorList[j].name)) {
-                return 1;
+    qsort((void *)g1->actorList,
+          g1->actorSize,
+          sizeof(g1->actorList[0]),
+          comparator1);
+    for (int j = 0; j < g2->actorSize; j++) {
+        int l = 0;
+        int r = g1->actorSize - 1;
+        // Binary search.
+        while (l <= r) { 
+            int m = (l + r) / 2; 
+            // Check if name is present at mid.
+            if (strcmp(g1->actorList[m].name, g2->actorList[j].name) == 0) return 1; 
+    
+            if (strcmp(g1->actorList[m].name, g2->actorList[j].name) < 0) {
+                l = m + 1;
+            } else {
+                r = m - 1; 
             }
         }
     }
@@ -710,21 +723,14 @@ int intersect(TGraphL *g1, TGraphL *g2) {
 }
 
 void merge(TGraphL *g1, TGraphL *g2) {
-    for (int i = 0; i < g1->actorSize; i++) {
-        for (int j = 0; j < g2->actorSize; j++) {
-            if (!strcmp(g1->actorList[i].name, g2->actorList[j].name)) {
-                for (int k = 0; k < g2->nn; k++) {
-                    char *name = getActorName(g2, k);
+    for (int j = 0; j < g2->actorSize; j++) {
+        char *name = getActorName(g2, j);
 
-                    // Update g1's actor list.
-                    int newNode = addActor(g1, name, g1->actorSize);
-                    if (newNode) {
-                        int id = g1->actorSize - 1;
-                        
-                        addGraphNode(g1, id, g2, k);
-                    }
-                }
-            }
+        // Update g1's actor list.
+        int newNode = addActor(g1, name, g1->actorSize);
+        if (newNode) {
+            int id = g1->actorSize - 1;
+            addGraphNode(g1, id, g2, j);
         }
     }
 }

@@ -38,10 +38,6 @@ int first(char *inputPath, char *outputPath) {
             }
         }
     }
-    qsort((void*)data->graph[maxProductionIdx]->actorList,
-        data->graph[maxProductionIdx]->actorSize,
-        sizeof(data->graph[maxProductionIdx]->actorList[0]),
-        comparator1);
     writeOutput1(outputPath, maxProduction, maxProductionIdx, data);
     destroyData(&data);
     return 0;
